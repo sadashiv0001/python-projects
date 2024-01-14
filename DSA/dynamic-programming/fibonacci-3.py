@@ -6,7 +6,7 @@
 # in this method Dynamic Programming is implemented 
 # Bottom Up approach (Tabulation Method)
 # when n = 4 , o/p = 3, when n = 5  , o/p = 5 and so on...
-# time comlexity: O(n) and space comlexity: O(n)
+# time comlexity: O(n) and space comlexity: O(n) actually better than the Top-bottom approach
 
 def fibonacci(n):
     dp={}
