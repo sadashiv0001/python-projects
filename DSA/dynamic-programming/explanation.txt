@@ -1,0 +1,8 @@
+# fibonacci series (e.g.: 0,1,1,2,3,5,8,13...)
+# the fibonacci series is the addition of the last two numbers.
+# formula: f(n) = f(n-1) + f(n+2)
+
+
+# we can solve it two different ways,
+# 1. Simple recursion, 2.Dynamic Recursion, 
+
