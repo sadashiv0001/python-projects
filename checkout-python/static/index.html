@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supermarket Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #app {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <label for="itemsInput">Enter items:</label>
+        <input type="text" id="itemsInput" placeholder="E.g., AABCD">
+
+        <button onclick="calculateTotal()">Calculate Total</button>
+
+        <p>Total Price: <span id="totalPrice">0</span></p>
+    </div>
+
+    <script>
+        function calculateTotal() {
+            const itemsInput = document.getElementById("itemsInput");
+            const totalPrice = document.getElementById("totalPrice");
+
+            // Get the entered items from the input
+            const items = itemsInput.value;
+
+            // Send the items to the backend for processing
+            fetch(`/calculate_total?items=${encodeURIComponent(items)}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the total price on the frontend
+                    totalPrice.textContent = data.total;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

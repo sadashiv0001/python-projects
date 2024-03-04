@@ -1,0 +1,174 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Kata</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+    .postman-run-button {
+        position: fixed;
+        top: 20px;
+        right: 80px;
+    }
+    .card-section {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+</style>
+</head>
+<body class="container mt-4">
+    <div class="row">
+        <div class="postman-run-button"
+            data-postman-action="collection/fork"
+            data-postman-visibility="public"
+            data-postman-var-1="32061036-4b71fc39-ee17-472a-9b4b-c5d08359b481"
+            data-postman-collection-url="entityId=32061036-4b71fc39-ee17-472a-9b4b-c5d08359b481&entityType=collection&workspaceId=9c78a232-b120-4e73-aafc-12a78a809445"></div>
+        <script type="text/javascript">
+            (function (p,o,s,t,m,a,n) {
+                !p[s] && (p[s] = function () { (p[t] || (p[t] = [])).push(arguments); });
+                !o.getElementById(s+t) && o.getElementsByTagName("head")[0].appendChild((
+                (n = o.createElement("script")),
+                (n.id = s+t), (n.async = 1), (n.src = m), n
+                ));
+            }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
+        </script>
+    </div>
+
+    <div class="row">
+        <!-- Left side with input field and Scan button -->
+        <div class="col-md-6">
+            <h1>Checkout Kata</h1>
+            <form id="scanForm">
+                <div class="form-group">
+                    <label for="item">Scan Item:</label>
+                    <input type="text" id="item" name="item" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Scan</button>
+            </form>
+            <button class="btn btn-danger mt-3" onclick="resetCheckout()">Reset</button>
+        </div>
+
+        <!-- Right side with item list and subtotal -->
+        <div class="col-md-6">
+            <h2>Item List</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Actual Price</th>
+                        <th>Offer Price</th>
+                    </tr>
+                </thead>
+                <tbody id="itemList">
+                    <!-- Items will be dynamically added here -->
+                </tbody>
+            </table>
+            <div class="text-right">
+                <h3>Subtotal:</h3>
+                <p id="subtotalCents">0 Cents</p>
+                <p id="subtotalDollars">0 Dollars</p>
+            </div>
+        </div>
+
+      
+    </div>
+    
+
+    <!-- Bootstrap JS and jQuery (needed for some Bootstrap features) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        function addToPostman() {
+            // Logic to add APIs to Postman
+            alert('Added APIs to Postman collection');
+            // You can use Postman API to dynamically add requests to a collection
+            // Refer to Postman API documentation: https://www.postman.com/postman/workspace/postman-public-workspace/documentation/12959539-4d63b349-e2ef-45fe-b225-021e7c15bb56
+        }
+    </script>
+    <script>
+        document.getElementById("scanForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // const item = document.getElementById("item").value;
+            // fetch('/scan', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ items: item }),
+            // })
+            const item = document.getElementById("item").value;
+            fetch('/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ items: [item] }), // Wrap item in an array
+            })
+
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                updateItemList();
+                updateTotalPrice();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        function updateItemList() {
+            fetch('/item_list')
+            .then(response => response.json())
+            .then(data => {
+                const itemList = document.getElementById("itemList");
+                itemList.innerHTML = ""; // Clear previous items
+
+                // Display items in descending order
+                data.items.reverse().forEach(item => {
+                    const row = itemList.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    const cell3 = row.insertCell(2);
+                    const cell4 = row.insertCell(3);
+
+                    cell1.textContent = item.Item;
+                    cell2.textContent = item.Qty;
+                    cell3.textContent = item['Actual Price'];
+                    cell4.textContent = item['Offer Price'];
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateTotalPrice() {
+            fetch('/total')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("subtotalCents").textContent = data.total_price + " Cents";
+                document.getElementById("subtotalDollars").textContent = (data.total_price / 100) + " Dollars";
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function resetCheckout() {
+            fetch('/reset', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                updateItemList();
+                updateTotalPrice();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Initial update of item list and total price
+        updateItemList();
+        updateTotalPrice();
+    </script>
+</body>
+</html>
